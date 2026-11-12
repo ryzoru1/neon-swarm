@@ -74,6 +74,7 @@ togglePause(); assert(state === 'paused', 'pause works');
 togglePause(); assert(state === 'playing', 'unpause works');
 
 keys.KeyW = false; keys.KeyD = false;
+player.s.fireDelay = 9999; player.s.blades = 0; player.s.nova = 0;
 player.hp = 0.1;
 spawnEnemy('boss', player.x, player.y);
 let died = false;

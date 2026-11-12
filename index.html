@@ -202,7 +202,7 @@ function makePlayer() {
   return {
     x: 0, y: 0, r: 14, hp: 100, maxHp: 100,
     s: {
-      speed: 260, dmg: 12, fireDelay: 0.42, multishot: 1, pierce: 0,
+      speed: 260, dmg: 12, fireDelay: 0.42, multishot: 1, pierce: 0, maxHp: 100,
       magnet: 90, blades: 0, regen: 0, crit: 0.03, nova: 0, novaDelay: 5,
       bulletSpeed: 560,
     },
@@ -464,7 +464,7 @@ function update(dt) {
         sfx('hurt');
         spawnParticle(player.x, player.y, '#ff2d55', 12, 220, 0.4, 4);
         floater(player.x, player.y - 20, '-' + Math.round(e.dmg), '#ff2d55', 16);
-        if (player.hp <= 0) { gameOver(); return; }
+        if (!(player.hp > 0)) { gameOver(); return; }
       }
       if (!e.boss) { // knockback small enemies
         e.x -= Math.cos(a) * 14; e.y -= Math.sin(a) * 14;
