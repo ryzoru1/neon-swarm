@@ -179,7 +179,8 @@ let cam, shake, spawnTimer, waveTimer, wave, gameTime, kills, score;
 let pendingCards = [];
 let fireCooldown = 0, bladeAngle = 0, hitFlash = 0;
 let difficulty = 1;
-let bestScore = +(localStorage.getItem('neonswarm_best') || 0);
+let bestScore = 0;
+try { bestScore = +(localStorage.getItem('neonswarm_best') || 0); } catch (e) {}
 
 // ============ UPGRADES ============
 const UPGRADES = [
@@ -240,7 +241,7 @@ function spawnWave() {
   wave++;
   const count = Math.floor(5 + wave * 2.4 + difficulty * 2);
   for (let i = 0; i < count; i++) {
-    const a = rand(0, TAU), d = rand(Math.max(W, H) * 0.55, Math.max(W, H) * 0.75);
+    const a = rand(0, TAU), d = rand(Math.max(window.innerWidth, window.innerHeight) * 0.55, Math.max(window.innerWidth, window.innerHeight) * 0.75);
     let type = 'chaser';
     const roll = Math.random();
     if (wave >= 2 && roll < 0.22) type = 'speeder';
@@ -281,18 +282,23 @@ function hideAll() {
 }
 
 function togglePause() {
-  if (state === 'playing') state = 'paused';
+  if (state === 'playing') { state = 'paused'; showToast('❚❚ PAUSED'); }
   else if (state === 'paused') state = 'playing';
 }
 
 function gameOver() {
   state = 'gameover';
-  if (score > bestScore) { bestScore = score; localStorage.setItem('neonswarm_best', bestScore); }
+  if (score > bestScore) {
+    bestScore = score;
+    try { localStorage.setItem('neonswarm_best', bestScore); } catch (e) {}
+  }
   const m = Math.floor(gameTime / 60), s = Math.floor(gameTime % 60);
   document.getElementById('finalStats').innerHTML =
     `SURVIVED <b>${m}:${String(s).padStart(2, '0')}</b> &nbsp;·&nbsp; WAVE <b>${wave}</b><br>` +
     `KILLS <b>${kills}</b> &nbsp;·&nbsp; SCORE <b>${score.toLocaleString()}</b><br>` +
     `BEST <b>${bestScore.toLocaleString()}</b>`;
+  document.getElementById('levelup').classList.add('hidden');
+  pendingCards = [];
   document.getElementById('gameover').classList.remove('hidden');
   document.getElementById('hud').classList.add('hidden');
 }
@@ -340,6 +346,7 @@ function openLevelUp() {
 }
 
 function chooseUpgrade(u) {
+  if (state !== 'levelup') return;
   u.apply(player.s);
   player.levels[u.id] = (player.levels[u.id] || 0) + 1;
   document.getElementById('levelup').classList.add('hidden');
@@ -515,7 +522,7 @@ function update(dt) {
   spawnTimer -= dt;
   if (spawnTimer <= 0 && enemies.length < 130) {
     spawnTimer = Math.max(0.25, 1.6 - wave * 0.06);
-    const a = rand(0, TAU), d = Math.max(W, H) * 0.62;
+    const a = rand(0, TAU), d = Math.max(window.innerWidth, window.innerHeight) * 0.62;
     let type = 'chaser';
     const roll = Math.random();
     if (wave >= 2 && roll < 0.25) type = 'speeder';

@@ -73,6 +73,22 @@ assert(state === 'playing', 'upgrade choice returns to playing');
 togglePause(); assert(state === 'paused', 'pause works');
 togglePause(); assert(state === 'playing', 'unpause works');
 
+state = 'gameover';
+chooseUpgrade(pendingCards[0] || UPGRADES[0]);
+assert(state === 'gameover', 'upgrade choice ignored when not in level-up (no revive after death)');
+state = 'playing';
+
+const regen = UPGRADES.find(u => u.id === 'regen');
+const hull = UPGRADES.find(u => u.id === 'hp');
+state = 'levelup'; pendingCards = [regen]; chooseUpgrade(regen);
+state = 'levelup'; pendingCards = [hull]; chooseUpgrade(hull);
+let finite = true;
+for (let f = 0; f < 300; f++) {
+  update(1/60);
+  if (!isFinite(player.hp)) { finite = false; break; }
+}
+assert(finite && isFinite(player.s.maxHp), 'regen + hull upgrades keep HP finite (NaN regression)');
+
 keys.KeyW = false; keys.KeyD = false;
 player.s.fireDelay = 9999; player.s.blades = 0; player.s.nova = 0;
 player.hp = 0.1;
