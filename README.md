@@ -17,3 +17,8 @@ dependency-free HTML file. No build step, no assets, no frameworks — just open
 - 5 enemy types incl. splitting enemies and wave bosses
 - Synthesized sound effects via WebAudio (zero audio files)
 - Particles, screen shake, damage numbers, persistent high score
+
+## Development
+
+- `node test/smoke.js` — headless smoke test (no browser needed), also runs in CI
+- MIT licensed — see [LICENSE](LICENSE)
